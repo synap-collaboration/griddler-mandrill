@@ -124,10 +124,10 @@ describe Griddler::Mandrill::Adapter, '.normalize_params' do
       @params.first[:msg][:spf] = { result: 'softfail', detail: 'domain owner discourages use of this host' }
     end
 
-    it "doesn't include emails that have failed the SPF test" do
+    it "does include emails that have failed the SPF test" do
       params = default_params(@params)
       normalized_params = Griddler::Mandrill::Adapter.normalize_params(params)
-      expect(normalized_params).to be_empty
+      expect(normalized_params.size).to eql 2
     end
   end
 
@@ -137,10 +137,10 @@ describe Griddler::Mandrill::Adapter, '.normalize_params' do
       @params.first[:msg][:spf] = { result: 'fail', detail: 'sender SPF fail' }
     end
 
-    it "doesn't include emails that have failed the SPF test" do
+    it "does include emails that have failed the SPF test" do
       params = default_params(@params)
       normalized_params = Griddler::Mandrill::Adapter.normalize_params(params)
-      expect(normalized_params).to be_empty
+      expect(normalized_params.size).to eql 2
     end
   end
 
