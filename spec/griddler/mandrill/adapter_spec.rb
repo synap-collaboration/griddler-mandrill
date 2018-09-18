@@ -88,6 +88,34 @@ describe Griddler::Mandrill::Adapter, '.normalize_params' do
     expect(second.size).to eq(upload_7_params[:length])
   end
 
+  describe 'attachment has content-disposition' do
+    describe 'when file is a inline images' do
+      it 'has content-disposition inline' do
+        params = params_with_inline_images
+
+        normalized_params = Griddler::Mandrill::Adapter.normalize_params(params)
+
+        first, second = *normalized_params[0][:attachments]
+
+        expect(JSON.parse(first.headers)['Content-Disposition']).to eq('inline')
+        expect(JSON.parse(second.headers)['Content-Disposition']).to eq('inline')
+      end
+    end
+
+    describe 'when file is attachment' do
+      it 'has content-disposition attachment' do
+        params = params_with_attachments
+
+        normalized_params = Griddler::Mandrill::Adapter.normalize_params(params)
+
+        first, second = *normalized_params[0][:attachments]
+
+        expect(JSON.parse(first.headers)['Content-Disposition']).to eq('attachment')
+        expect(JSON.parse(second.headers)['Content-Disposition']).to eq('attachment')
+      end
+    end
+  end
+
   describe 'when the email has no text part' do
     before do
       @params = params_hash

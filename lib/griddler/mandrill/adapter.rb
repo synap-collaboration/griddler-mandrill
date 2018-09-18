@@ -64,6 +64,7 @@ module Griddler
 
       def files(event, key)
         files = event[key] || Hash.new
+        content_disposition = key.to_s == 'attachments' ? 'attachment' : 'inline'
 
         files.map do |key, file|
           file[:base64] = true if !file.has_key?(:base64)
@@ -71,7 +72,8 @@ module Griddler
           ActionDispatch::Http::UploadedFile.new({
             filename: file[:name],
             type: file[:type],
-            tempfile: create_tempfile(file)
+            tempfile: create_tempfile(file),
+            head: "{\"Content-Disposition\": \"#{content_disposition}\"}"
           })
         end
       end
